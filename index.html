@@ -1065,8 +1065,7 @@ const STORE_KEY = "morning-dispatch-v1";
       });
       if (!res.ok) return null;
       const data = await res.json();
-      const content = atob(data.content.replace(/
-/g, ""));
+      const content = atob(data.content.split("\n").join(""));
       return { journal: JSON.parse(content), sha: data.sha };
     } catch(e) {
       console.error("Failed to load journal from GitHub:", e);
@@ -1089,8 +1088,7 @@ const STORE_KEY = "morning-dispatch-v1";
       if (res.ok) {
         const data = await res.json();
         sha = data.sha;
-        journal = JSON.parse(atob(data.content.replace(/
-/g, "")));
+        journal = JSON.parse(atob(data.content.split("\n").join("")));
       }
     } catch(e) {}
     journal[entry.date] = entry;
@@ -1123,8 +1121,7 @@ const STORE_KEY = "morning-dispatch-v1";
     saveStore(s);
     renderArchive(date, entry);
     showStatus(date, "✶ Saving to GitHub journal...");
-    const btn = document.querySelector('[onclick="saveEdition('' + date + '')"]');
-    if(btn) btn.disabled = true;
+    const btn = document.querySelector('[data-date="' + date + '"] .save-btn');   if(btn) btn.disabled = true;
     const success = await saveJournalToGitHub(entry);
     if(btn) btn.disabled = false;
     if(success) {
